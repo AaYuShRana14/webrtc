@@ -4,21 +4,20 @@ const wss = new WebSocket.Server({ port: 8080 });
 
 wss.on('connection', function connection(ws) {
   console.log('New user connected');
-
   ws.on('message', function incoming(message) {
     try {
       const data = JSON.parse(message);
       if (data.type === 'join') {
-        handleroom(data.roomId,ws);
+        handleroom(data.roomId,ws,data.userId);
       }
       if(data.type==='offer'){
-        handleoffer(data.offer,data.roomId,ws);
+        handleoffer(data.offer,data.roomId,ws,data.userId);
       }
       if(data.type==='ice'){
-        handleice(data.ice,data.roomId,ws);
+        handleice(data.ice,data.roomId,ws,data.userId);
       }
       if(data.type==='answer'){
-        handleanswer(data.answer,data.roomId,ws);
+        handleanswer(data.answer,data.roomId,ws,data.userId);
       }
     } catch (error) {
       console.error('Error parsing JSON:', error);
@@ -35,7 +34,7 @@ wss.on('connection', function connection(ws) {
     }
   });
 });
-function handleroom(roomId,ws){
+function handleroom(roomId,ws,userId){
   if(rooms[roomId] && rooms[roomId].length>=2){
     ws.send(JSON.stringify({type:'room-full'}));
     return;
@@ -46,27 +45,27 @@ function handleroom(roomId,ws){
   rooms[roomId].push(ws);
   if(rooms[roomId].length===2)
   rooms[roomId].forEach(client => {
-      client.send(JSON.stringify({ type: 'start-call', roomId }));
+      client.send(JSON.stringify({ type: 'start-call', roomId,userId}));
   });
 }
-function handleoffer(offer,roomId,ws){
-  console.log('offer');
+function handleoffer(offer,roomId,ws,userId){
   let msg={"type":"offer",offer};
-  broadCast(msg,roomId,ws);
+  broadCast(msg,roomId,ws,userId);
 }
-function handleice(ice,roomId,ws){
-  console.log('ice');
+function handleice(ice,roomId,ws,userId){
   let msg={"type":"ice",ice};
-  broadCast(msg,roomId,ws);
+  broadCast(msg,roomId,ws,userId);
 }
-function handleanswer(answer,roomId,ws){
-  console.log('answer');
+function handleanswer(answer,roomId,ws,userId){
   let msg={"type":"answer",answer};
-  broadCast(msg,roomId,ws);
+  broadCast(msg,roomId,ws,userId);
 }
-function broadCast(msg,roomId,sender){
-  console.log('broadcast');
+function broadCast(msg,roomId,sender,userId){
   if(!rooms[roomId]) return;
+  if(rooms[roomId].length===1){
+    sender.send(JSON.stringify({type:'room-not-found'}));
+    return;
+  }
   rooms[roomId].forEach(client=>{
     if(client!==sender && client.readyState===WebSocket.OPEN){
       client.send(JSON.stringify(msg));

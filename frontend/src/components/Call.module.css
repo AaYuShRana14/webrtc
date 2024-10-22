@@ -1,0 +1,60 @@
+.videocontainer {
+    position: relative;
+    flex: auto;
+    width: 100%;
+    height: 68vh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    
+}
+
+.container {
+    margin: 0;
+    padding: 0;
+    background-color: #1b2229;
+    overflow: hidden;
+    position: relative;
+    z-index: 0; 
+}
+
+.remotevideo {
+    width: 100%; 
+    height: 100%;
+    z-index: 1; 
+}
+
+.localvideo {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    bottom: 20px;
+    right: 20px;
+    border: 2px solid white;
+    background: black;
+    z-index: 2;
+}
+
+.btncontainer {
+    display: flex;
+    justify-content: center;
+    margin: 10%;
+    z-index: 3;
+}
+
+.btns {
+    padding: 10px 20px;
+    background-color: #05d1c4;
+    border: none;
+    color: white;
+    font-size: 16px;
+    margin: 0 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btns:hover {
+    background-color: #03b0a3;
+}
