@@ -101,7 +101,7 @@ const Call = () => {
     }, [location]);
 
     useEffect(() => {
-        const ws = new WebSocket('ws://localhost:8080');
+        const ws = new WebSocket('wss://webrtc-1-vnlv.onrender.com');
         ws.onopen = () => {
             console.log('Connected to server');
             socket.current = ws;
